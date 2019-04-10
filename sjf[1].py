@@ -19,7 +19,8 @@ while d!=[]:
 	total+=val
 pri=0
 key=[x for x in range(1,len(comp)+1)]
-'''print('process  burst   sched   comp  turn  wait')
+
+print('process  burst   sched   comp  turn  wait')
 for i in key:
 	bu,sc,ct=comp[i][0][0],comp[i][0][1][0],comp[i][0][1][1]
 	at=arr_time[i-1]
@@ -27,4 +28,4 @@ for i in key:
 	wt=tt-bu
 	new[i].append([at,bu,sc,ct,tt,wt,pri])
 for j in new.keys():
-	print(j
+	print(j,new[j)
