@@ -5,39 +5,39 @@ using namespace std;
 
 struct processes
 {
-    short int arrival, burst, burst_backup, completion = 0, turn_around = 0, waiting = 0, response = 0, priority = 0;
+    short int arrival, burst, burst_backup, completion = 0, turn_around = 0, wait = 0, response = 0, priority = 0;
 } * process;
 
 short int total_time = 0, processes_count, queue_count;
 
-int next_process_to_execute()
+int process_execution()
 {
-    int high_priority = 0, less_burst_time = 0, process_index = 0;
+    int max_priority = 0, less_burst_time = 0, process_index = 0;
 
     for (short int i = 0; i < processes_count; i++)
     {
         if (process[i].burst > 0 &&
             total_time > process[i].arrival &&
-            process[i].waiting >= 10)
+            process[i].wait >= 10)
         {
-            process[i].priority = process[i].waiting / 10;
+            process[i].priority = process[i].wait / 10;
         }
     }
 
     for (short int i = 0; i < processes_count; i++)
     {
-        if ((process[i].burst) > 0 && (process[i].priority > high_priority))
+        if ((process[i].burst) > 0 && (process[i].priority > max_priority))
         {
-            high_priority = process[i].priority;
+            max_priority = process[i].priority;
             break;
         }
     }
 
     for (short int i = 0; i < processes_count; i++)
     {
-        if ((process[i].burst > 0) && (process[i].priority > high_priority))
+        if ((process[i].burst > 0) && (process[i].priority > max_priority))
         {
-            high_priority = process[i].priority;
+            max_priority = process[i].priority;
         }
     }
 
@@ -45,7 +45,7 @@ int next_process_to_execute()
     {
         if ((process[i].burst) > 0 &&
             (total_time >= process[i].arrival) &&
-            (process[i].priority == high_priority))
+            (process[i].priority == max_priority))
         {
             less_burst_time = process[i].burst;
             process_index = i;
@@ -58,7 +58,7 @@ int next_process_to_execute()
         if ((less_burst_time > process[i].burst) &&
             (process[i].burst > 0) &&
             (total_time >= process[i].arrival) &&
-            (process[i].priority == high_priority))
+            (process[i].priority == max_priority))
         {
             less_burst_time = process[i].burst;
             process_index = i;
@@ -67,7 +67,7 @@ int next_process_to_execute()
     return process_index;
 }
 
-bool all_processes_completed()
+bool process_state()
 {
     for (short int i = 0; i < processes_count; i++)
     {
@@ -79,7 +79,7 @@ bool all_processes_completed()
     return TRUE;
 }
 
-bool all_arrived_processes_completed()
+bool process_arrived()
 {
     for (short int i = 0; i < processes_count; i++)
     {
@@ -91,13 +91,13 @@ bool all_arrived_processes_completed()
     return TRUE;
 }
 
-void execute_processes()
+void main_process()
 {
-    while (!all_processes_completed())
+    while (!process_state())
     {
-        if (!all_arrived_processes_completed())
+        if (!process_arrived())
         {
-            int process_id = next_process_to_execute();
+            int process_id = process_execution();
 
             cout << "\nProcess under execution is => " << process_id;
 
@@ -110,7 +110,7 @@ void execute_processes()
                 {
                     if (index != process_id && total_time > process[index].arrival && process[index].burst > 0)
                     {
-                        ++process[index].waiting;
+                        ++process[index].wait;
                     }
                 }
             }
@@ -126,19 +126,19 @@ void execute_processes()
     }
 }
 
-void display_table()
+void table_maker()
 {
-    cout << "\n\nPROCESS    ||  ARRIVAL\t BURST\t COMP\t TURN\t WAITING\t\n";
+    cout << "\n\nPROCESS    ||  ARRIVAL\t BURST\t COMP\t TURN\t wait\t\n";
     cout << "--------------------------------------------------------------------------\n";
 
     for (short int index = 0; index < processes_count; index++)
     {
-        cout << "Process "<< index << "   |  "<< process[index].arrival << "\t "<< process[index].burst_backup<< "\t " << process[index].completion<< "\t " << process[index].turn_around << "\t " << process[index].waiting << "\n\n";
+        cout << "Process "<< index << "   |  "<< process[index].arrival << "\t "<< process[index].burst_backup<< "\t " << process[index].completion<< "\t " << process[index].turn_around << "\t " << process[index].wait << "\n\n";
     }
 
     cout << "--------------------------------------------------------------------------\n";
 
-    float total_turnaround_time = 0, total_waiting_time = 0;
+    float total_turnaround_time = 0, total_wait_time = 0;
 
     for (short int index = 0; index < processes_count; index++)
     {
@@ -148,12 +148,12 @@ void display_table()
 
     for (short int index = 0; index < processes_count; index++)
     {
-        total_waiting_time += process[index].waiting;
+        total_wait_time += process[index].wait;
     }
-    total_waiting_time /= processes_count;
+    total_wait_time /= processes_count;
 
     cout << "\nAverage Turn around Time | " << total_turnaround_time << "\n";
-    cout << "\nAverage Waiting Time | " << total_waiting_time << "\n\n\n";
+    cout << "\nAverage wait Time | " << total_wait_time << "\n\n\n";
 }
 
 int main()
@@ -172,8 +172,8 @@ int main()
 
     system("cls");
     cout << "Execution Started : \n";
-    execute_processes();
+    main_process();
     cout << "\n\nAll Processes executed\n\n";
-    display_table();
+    table_maker();
     system("pause");
 }
